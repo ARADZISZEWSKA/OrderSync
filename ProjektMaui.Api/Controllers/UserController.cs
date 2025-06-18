@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjektMaui.Api.Data;
-using ProjektMaui.Api.DTOs;
 using ProjektMaui.Api.Models;
+using ProjektMaui.Api.Models.Dto;
 using System.Security.Cryptography;
 using System.Text;
 

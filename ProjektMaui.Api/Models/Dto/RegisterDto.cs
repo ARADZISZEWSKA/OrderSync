@@ -1,4 +1,4 @@
-﻿namespace ProjektMaui.Api.DTOs
+﻿namespace ProjektMaui.Api.Models.Dto
 {
     public class RegisterDto
     {

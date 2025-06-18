@@ -10,14 +10,14 @@ namespace ProjektMaui.Api.Data
             using var scope = app.ApplicationServices.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            context.Database.Migrate(); // upewnij się, że baza istnieje
+            context.Database.Migrate(); 
 
             if (!context.Users.Any(u => u.Role == UserRole.Admin))
             {
                 var admin = new User
                 {
                     Email = "admin@example.com",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"), // zabezpieczone hasło
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
                     FirstName = "Admin",
                     LastName = "Systemowy",
                     Role = UserRole.Admin,

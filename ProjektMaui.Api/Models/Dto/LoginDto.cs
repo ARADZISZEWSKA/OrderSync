@@ -1,4 +1,4 @@
-﻿namespace ProjektMaui.Api.Models
+﻿namespace ProjektMaui.Api.Models.Dto
 {
     public class LoginDto
     {
