@@ -5,6 +5,10 @@ using ProjektMaui.Api.Models;
 using ProjektMaui.Api.Models.Dto;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 
 namespace ProjektMaui.Api.Controllers
 {
@@ -13,10 +17,12 @@ namespace ProjektMaui.Api.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UserController(AppDbContext context)
+        public UserController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -61,14 +67,33 @@ namespace ProjektMaui.Api.Controllers
             if (user.PasswordHash != hashedPassword)
                 return Unauthorized("Niepoprawny email lub hasło");
 
+            // Tworzenie tokena
+            var jwtKey = _configuration.GetValue<string>("JwtKey");
+            var key = Encoding.ASCII.GetBytes(jwtKey);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.FirstName),
+                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
             return Ok(new
             {
-                Message = "Zalogowano pomyślnie",
+                Token = tokenString,
                 UserId = user.Id,
-                Role = user.Role.ToString(),
-                Name = user.FirstName
+                Name = user.FirstName,
+                Role = user.Role.ToString()
             });
         }
-
     }
 }
