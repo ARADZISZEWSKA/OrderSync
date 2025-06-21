@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProjektMaui.Api.Controllers
 {
@@ -78,7 +79,8 @@ namespace ProjektMaui.Api.Controllers
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.FirstName),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
+                    new Claim(ClaimTypes.Role, user.Role == UserRole.Admin ? "Admin" : "User")
+
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -92,8 +94,48 @@ namespace ProjektMaui.Api.Controllers
                 Token = tokenString,
                 UserId = user.Id,
                 Name = user.FirstName,
-                Role = user.Role.ToString()
+                Role = user.Role == UserRole.Admin ? "Admin" : "User"
             });
+
         }
+
+        // Zwraca listę wszystkich użytkowników (tylko Admin)
+        [HttpGet("all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _context.Users
+                .Select(u => new
+                {
+                    u.Id,
+                    u.FirstName,
+                    u.LastName,
+                    u.Email,
+                    Role = u.Role == UserRole.Admin ? "Admin" : "User"
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
+
+        // Zmiana roli na Admin (tylko Admin)
+        [HttpPut("{id}/role")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeUserRole(int id, [FromBody] ChangeRoleDto dto)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+                return NotFound("Użytkownik nie istnieje.");
+
+            if (!Enum.TryParse<UserRole>(dto.NewRole, true, out var newRole))
+                return BadRequest("Nieprawidłowa rola.");
+
+            user.Role = newRole;
+            await _context.SaveChangesAsync();
+
+            return Ok($"Rola użytkownika zmieniona na {newRole}");
+        }
+
     }
 }
