@@ -58,18 +58,33 @@ namespace ProjektMaui.Api.Controllers
                 .ToListAsync();
         }
 
+        
+
+      
+
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] OrderStatus status)
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateStatusDto dto)
         {
             var order = await _context.Orders.FindAsync(id);
             if (order == null) return NotFound();
 
-            order.Status = status;
+            if (string.IsNullOrWhiteSpace(dto.Status))
+                return BadRequest("Status is required.");
+
+            if (!Enum.TryParse<OrderStatus>(dto.Status, true, out var parsedStatus))
+                return BadRequest("Invalid status value.");
+
+            order.Status = parsedStatus;
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
+
+
+
     }
 
 }
