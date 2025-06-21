@@ -10,7 +10,7 @@ namespace ProjektMaui.Api.Data
             using var scope = app.ApplicationServices.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            context.Database.Migrate(); 
+         context.Database.Migrate(); 
 
             if (!context.Users.Any(u => u.Role == UserRole.Admin))
             {
