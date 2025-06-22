@@ -38,6 +38,38 @@ namespace ProjektMaui.Api.Controllers
             return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, Product updatedProduct)
+        {
+            if (id != updatedProduct.Id)
+                return BadRequest();
+
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            product.Name = updatedProduct.Name;
+            product.Description = updatedProduct.Description;
+            product.Price = updatedProduct.Price;
+            product.ImageUrl = updatedProduct.ImageUrl;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+
+
     }
 
 }
