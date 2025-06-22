@@ -153,25 +153,26 @@ namespace ProjektMaui.Api.Controllers
                 Role = user.Role.ToString()
             });
         }
-
         [HttpPut("{id}")]
-        [Authorize] // lub tylko dla właściciela
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDto dto)
         {
-            if (id != updatedUser.Id) return BadRequest();
+            if (id != dto.Id) return BadRequest();
 
             var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound();
 
-            // Aktualizuj tylko dozwolone pola:
-            user.FirstName = updatedUser.FirstName;
-            user.LastName = updatedUser.LastName;
-            user.Email = updatedUser.Email;
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Email = dto.Email;
+
+            // NIE zmieniamy hash, NIE zmieniamy roli.
 
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
 
 
     }
