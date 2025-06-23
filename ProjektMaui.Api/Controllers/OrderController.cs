@@ -29,7 +29,8 @@ namespace ProjektMaui.Api.Controllers
             {
                 ProductId = dto.ProductId,
                 UserId = userId,
-                Notes = dto.Notes
+                Notes = dto.Notes,
+                ImageUrl = dto.ImageUrl  
             };
 
             _context.Orders.Add(order);
@@ -37,6 +38,7 @@ namespace ProjektMaui.Api.Controllers
 
             return Ok(order);
         }
+
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetMyOrders()

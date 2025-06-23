@@ -5,7 +5,7 @@ namespace ProjektMaui.Api.Data
 {
     public static class DbSeeder
     {
-        public static void SeedAdminUser(IApplicationBuilder app)
+        /*public static void SeedAdminUser(IApplicationBuilder app)
         {
             using var scope = app.ApplicationServices.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -27,6 +27,6 @@ namespace ProjektMaui.Api.Data
                 context.Users.Add(admin);
                 context.SaveChanges();
             }
-        }
+        }*/
     }
 }

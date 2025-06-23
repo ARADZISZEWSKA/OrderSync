@@ -21,7 +21,7 @@ namespace ProjektMaui.Api.Models
         public User User { get; set; }
 
         public string? Notes { get; set; }
-
+        public string? ImageUrl { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Received;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

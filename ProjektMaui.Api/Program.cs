@@ -53,8 +53,7 @@ builder.Services.AddAuthentication(options =>
 // zm
 
 var app = builder.Build();
-
-DbSeeder.SeedAdminUser(app);
+//DbSeeder.SeedAdminUser(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
